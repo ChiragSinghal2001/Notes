@@ -8,22 +8,23 @@ mongoose.connect("mongodb+srv://Chiragsinghal:CS123@slantcoding.ldjfxtd.mongodb.
     app.get("/",function(req,res){
         res.send("this is our homepage");
       });
-      app.get("/notes/lists",async function(req,res){
-        var notes=await note.find();
+      app.get("/notes/lists/:userid",async function(req,res){
+        var notes=await note.find({userid: req.params.userid});
           res.json(notes);
         });
         app.get("/notes/add",async function(req,res){
-          const newNote=new note({
-            id: "0001",
-            userid: "008chiragsinghal2001@gmail.com",
+          const newNote =new note({
+            id: "0018",
+            userid: "008chirag@gmail.com",
             title: "Harry Potter",
             content:  "content is this"
           });
-          newNote.save();
-            res.json(notes);
+          await newNote.save();
+          const response={message: " New Note Created!"};
+            res.json(newNote);
           });
 });
 
- app.listen(5000,function(){
-    console.log("Server started at PORT:  5000");
+ app.listen(3000,function(){
+    console.log("Server started at PORT:  3000");
  });
