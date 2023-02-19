@@ -2,29 +2,51 @@ const express = require('express');
 const app = express();
 
 const mongoose = require('mongoose');
-const note=require('./models/note');
+const Note = require('./models/note');
 
-mongoose.connect("mongodb+srv://Chiragsinghal:CS123@slantcoding.ldjfxtd.mongodb.net/?retryWrites=true&w=majority").then(function(){
-    app.get("/",function(req,res){
-        res.send("this is our homepage");
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: false }));
+app.use(bodyParser.json());
+
+mongoose.connect("mongodb+srv://Chiragsinghal:CS123@slantcoding.ldjfxtd.mongodb.net/?retryWrites=true&w=majority", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(function(){
+  mongoose.set('strictQuery', false);
+
+  app.get("/", function(req, res) {
+    res.send("This is our homepage");
+  });
+
+  app.get("/notes/lists/:userid", async function(req, res) {
+    try {
+      const notes = await Note.find({userid: req.params.userid});
+      res.json(notes);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/notes/add", async function(req, res) {
+    try {
+      const newNote = new Note({
+        id: req.body.id,
+        userid: req.body.userid,
+        title: req.body.title,
+        content: req.body.content
       });
-      app.get("/notes/lists/:userid",async function(req,res){
-        var notes=await note.find({userid: req.params.userid});
-          res.json(notes);
-        });
-        app.get("/notes/add",async function(req,res){
-          const newNote =new note({
-            id: "0018",
-            userid: "008chirag@gmail.com",
-            title: "Harry Potter",
-            content:  "content is this"
-          });
-          await newNote.save();
-          const response={message: " New Note Created!"};
-            res.json(newNote);
-          });
-});
+      await newNote.save();
+      res.json({ message: "New note created!", note: newNote });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
- app.listen(3000,function(){
-    console.log("Server started at PORT:  3000");
- });
+  app.listen(3000, function() {
+    console.log("Server started at PORT: 3000");
+  });
+}).catch(function(error) {
+  console.error(error);
+});
