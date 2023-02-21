@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const Note = require('./models/note');
 
 const bodyParser = require('body-parser');
+const { $where } = require('./models/note');
 app.use(bodyParser.urlencoded({extended: false }));
 app.use(bodyParser.json());
 
@@ -15,36 +16,16 @@ mongoose.connect("mongodb+srv://Chiragsinghal:CS123@slantcoding.ldjfxtd.mongodb.
   mongoose.set('strictQuery', false);
 
   app.get("/", function(req, res) {
-    res.send("This is our homepage");
+    const response = {message: "API works!"};
+    res.json(response);
   });
 
-  app.get("/notes/lists/:userid", async function(req, res) {
-    try {
-      const notes = await Note.find({userid: req.params.userid});
-      res.json(notes);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
+  const noteRouter = require('./routes/note');
+  app.use("/notes" , noteRouter);
 
-  app.post("/notes/add", async function(req, res) {
-    try {
-      const newNote = new Note({
-        id: req.body.id,
-        userid: req.body.userid,
-        title: req.body.title,
-        content: req.body.content
-      });
-      await newNote.save();
-      res.json({ message: "New note created!", note: newNote });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  app.listen(3000, function() {
+  
+   const PORT = process.env.PORT || 3000;
+  app.listen(PORT, function() {
     console.log("Server started at PORT: 3000");
   });
 }).catch(function(error) {
