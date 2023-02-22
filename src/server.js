@@ -26,7 +26,7 @@ mongoose.connect("mongodb+srv://Chiragsinghal:CS123@slantcoding.ldjfxtd.mongodb.
   
    const PORT = process.env.PORT || 3000;
   app.listen(PORT, function() {
-    console.log("Server started at PORT: 3000");
+    console.log("Server started at PORT: "  + PORT);
   });
 }).catch(function(error) {
   console.error(error);
