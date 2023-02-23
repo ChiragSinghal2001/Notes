@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Note = require('./models/note');
 
 const bodyParser = require('body-parser');
-const { $where } = require('./src/models/note');
+const { $where } = require('./models/note');
 app.use(bodyParser.urlencoded({extended: false }));
 app.use(bodyParser.json());
 
@@ -16,11 +16,11 @@ mongoose.connect("mongodb+srv://Chiragsinghal:CS123@slantcoding.ldjfxtd.mongodb.
   mongoose.set('strictQuery', false);
 
   app.get("/", function(req, res) {
-    const response = {message: "API works!"};
+    const response = { statuscode: res.statusCode ,message: "API works!"};
     res.json(response);
   });
 
-  const noteRouter = require('./src/routes/note');
+  const noteRouter = require('./routes/note');
   app.use("/notes" , noteRouter);
 
   
